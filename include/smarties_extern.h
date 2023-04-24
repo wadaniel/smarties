@@ -46,7 +46,7 @@ extern "C" VISIBLE void smarties_setNumAgents(void*const ptr2comm,
   const int num_agents);
 
 extern "C" VISIBLE void smarties_setStateActionDims(void*const ptr2comm,
-  const int state_dim, const int action_dim, const int agent_id);
+ const int state_dim, const int action_dim, const int agent_id);
 
 extern "C" VISIBLE void smarties_setActionScales(void*const ptr2comm,
   const double* const upper_scale, const double* const lower_scale,

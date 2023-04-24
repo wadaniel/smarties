@@ -61,6 +61,7 @@ set(smarties_sources
 
     ${source_dir}/smarties/Communicator.cpp
     ${source_dir}/smarties/Engine.cpp
+    ${source_dir}/smarties/smarties_extern.cpp
 
     ${source_dir}/smarties/Network/Approximator.cpp
     ${source_dir}/smarties/Network/Builder.cpp

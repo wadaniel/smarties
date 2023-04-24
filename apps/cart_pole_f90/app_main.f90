@@ -29,6 +29,7 @@ module app_main_module
   private
   integer, parameter :: NUM_ACTIONS = 1
   integer, parameter :: STATE_SIZE  = 6
+  integer, parameter :: AGENT_ID = 1
 
   ! 'app_main' is called from the outside (by the interface function
   ! 'app_main_interface' located in 'main.cpp')
@@ -83,17 +84,17 @@ contains
     lower_action_bound = (/-10/)
     call smarties_setActionScales(smarties_comm, &
         c_loc(upper_action_bound), c_loc(lower_action_bound), &
-        bounded, NUM_ACTIONS)
+        bounded, NUM_ACTIONS, AGENT_ID)
   
     ! OPTIONAL: hide state variables.
     ! e.g. show cosine/sine but not angle
     b_observable = (/.true., .true., .true., .false., .true., .true./)
-    call smarties_setStateObservable(smarties_comm, c_loc(b_observable), STATE_SIZE)
+    call smarties_setStateObservable(smarties_comm, c_loc(b_observable), STATE_SIZE, AGENT_ID)
   
     ! OPTIONAL: set space bounds
     upper_state_bound = (/ 1,  1,  1,  1,  1,  1/)
     lower_state_bound = (/-1, -1, -1, -1, -1, -1/)
-    call smarties_setStateScales(smarties_comm, c_loc(upper_state_bound), c_loc(lower_state_bound), STATE_SIZE)
+    call smarties_setStateScales(smarties_comm, c_loc(upper_state_bound), c_loc(lower_state_bound), STATE_SIZE, AGENT_ID)
   
     ! train loop
     do while (.true.)
@@ -103,13 +104,13 @@ contains
       
       ! send initial state to Smarties
       state = env%getState()
-      call smarties_sendInitState(smarties_comm, c_loc(state), STATE_SIZE)
+      call smarties_sendInitState(smarties_comm, c_loc(state), STATE_SIZE, AGENT_ID)
   
       ! simulation loop
       do while (.true.)
   
         ! get the action
-        call smarties_recvAction(smarties_comm, c_loc(action), NUM_ACTIONS)
+        call smarties_recvAction(smarties_comm, c_loc(action), NUM_ACTIONS, AGENT_ID)
   
         ! advance the simulation
         terminated = env%advance(action)
@@ -120,10 +121,10 @@ contains
   
         if (terminated) then
           ! tell Smarties that this is a terminal state
-          call smarties_sendTermState(smarties_comm, c_loc(state), STATE_SIZE, reward)
+          call smarties_sendTermState(smarties_comm, c_loc(state), STATE_SIZE, reward, AGENT_ID)
           exit
         else
-          call smarties_sendState(smarties_comm, c_loc(state), STATE_SIZE, reward)
+          call smarties_sendState(smarties_comm, c_loc(state), STATE_SIZE, reward, AGENT_ID)
         end if
   
       end do ! simulation loop
